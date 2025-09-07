@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LG Network GUI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        #task-form, #working-room {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        #working-room {
+            min-height: 200px;
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 8px;
+        }
+        button {
+            background-color: #1f77b4;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #135a8d;
+        }
+    </style>
+</head>
+<body>
+    <div id="task-form">
+        <h2>Submit Task</h2>
+        <input type="text" id="inputs" placeholder="Enter inputs (e.g., [2,3,4,5])">
+        <button onclick="submitTask()">Submit</button>
+    </div>
+    <div id="working-room">
+        <h2>Working Room</h2>
+        <p>Results will appear here...</p>
+    </div>
+    <script>
+        async function submitTask() {
+            try {
+                const inputs = JSON.parse(document.getElementById('inputs').value);
+                const response = await fetch('http://localhost:8000/submit_task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ inputs, connections: [], biases: {}, lgConfig: [] })
+                });
+                const { taskId } = await response.json();
+                document.getElementById('working-room').innerHTML = `<p>Task submitted: ${taskId}</p>`;
+                setTimeout(() => getResults(taskId), 1000);
+            } catch (error) {
+                document.getElementById('working-room').innerHTML = `<p>Error: ${error.message}</p>`;
+            }
+        }
+
+        async function getResults(taskId) {
+            try {
+                const response = await fetch(`http://localhost:8000/results/${taskId}`);
+                const data = await response.json();
+                document.getElementById('working-room').innerHTML = `<p>Results: ${JSON.stringify(data)}</p>`;
+            } catch (error) {
+                document.getElementById('working-room').innerHTML = `<p>Error fetching results: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
