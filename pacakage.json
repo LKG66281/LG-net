@@ -1,0 +1,14 @@
+{
+  "name": "lg-network-backend",
+  "version": "1.0.0",
+  "description": "Backend for LG-based neural network",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^5.0.0",
+    "bull": "^4.10.0"
+  }
+}
